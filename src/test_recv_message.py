@@ -71,6 +71,15 @@ async def main():
                                 if response.status_code == 200:
                                     with open(save_path, 'wb') as f:
                                         f.write(response.content)
+                                    
+                                    # 파일 수신 로그 기록
+                                    log_filename = update.message.date.strftime('%Y-%m-%d') + ".log"
+                                    log_filepath = os.path.join('log', log_filename)
+                                    log_entry = f"[{update.message.date.strftime('%H:%M:%S')}] 파일 수신: {original_filename} -> {save_path}\n"
+                                    
+                                    with open(log_filepath, 'a', encoding='utf-8') as f:
+                                        f.write(log_entry)
+
                                     print(f"파일을 수신하여 '{save_path}'에 저장했습니다.")
                                 else:
                                     print(f"파일 다운로드 실패 (ID: {file_to_download.file_id})")
@@ -80,7 +89,18 @@ async def main():
                         
                         # 텍스트 메시지 처리
                         elif update.message.text:
-                            print(f"[{update.message.date}] {update.message.from_user.first_name}: {update.message.text}")
+                            # 메시지 수신 날짜로 로그 파일 이름 설정 (예: 2025-09-05.log)
+                            log_filename = update.message.date.strftime('%Y-%m-%d') + ".log"
+                            log_filepath = os.path.join('log', log_filename)
+                            
+                            # 로그 메시지 형식: [HH:MM:SS] 사용자: 메시지
+                            log_entry = f"[{update.message.date.strftime('%H:%M:%S')}] {update.message.from_user.first_name}: {update.message.text}\n"
+                            
+                            # 파일에 로그 추가 (UTF-8 인코딩)
+                            with open(log_filepath, 'a', encoding='utf-8') as f:
+                                f.write(log_entry)
+                                
+                            print(f"텍스트 메시지를 '{log_filepath}'에 저장했습니다.")
                 
                 # 다음 폴링을 위해 update_id 갱신
                 last_update_id = update.update_id
