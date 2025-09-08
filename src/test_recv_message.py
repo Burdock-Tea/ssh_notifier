@@ -3,6 +3,7 @@ import asyncio
 import telegram
 import requests
 from dotenv import load_dotenv
+from zoneinfo import ZoneInfo
 
 # .env 파일에서 환경 변수 로드
 load_dotenv()
@@ -72,10 +73,11 @@ async def main():
                                     with open(save_path, 'wb') as f:
                                         f.write(response.content)
                                     
-                                    # 파일 수신 로그 기록
-                                    log_filename = update.message.date.strftime('%Y-%m-%d') + ".log"
+                                    # 파일 수신 로그 기록 (KST)
+                                    kst_time = update.message.date.astimezone(ZoneInfo("Asia/Seoul"))
+                                    log_filename = kst_time.strftime('%Y-%m-%d') + ".log"
                                     log_filepath = os.path.join('log', log_filename)
-                                    log_entry = f"[{update.message.date.strftime('%H:%M:%S')}] 파일 수신: {original_filename} -> {save_path}\n"
+                                    log_entry = f"[{kst_time.strftime('%H:%M:%S')}] 파일 수신: {original_filename} -> {save_path}\n"
                                     
                                     with open(log_filepath, 'a', encoding='utf-8') as f:
                                         f.write(log_entry)
@@ -89,12 +91,13 @@ async def main():
                         
                         # 텍스트 메시지 처리
                         elif update.message.text:
-                            # 메시지 수신 날짜로 로그 파일 이름 설정 (예: 2025-09-05.log)
-                            log_filename = update.message.date.strftime('%Y-%m-%d') + ".log"
+                            # 메시지 수신 날짜로 로그 파일 이름 설정 (KST)
+                            kst_time = update.message.date.astimezone(ZoneInfo("Asia/Seoul"))
+                            log_filename = kst_time.strftime('%Y-%m-%d') + ".log"
                             log_filepath = os.path.join('log', log_filename)
                             
                             # 로그 메시지 형식: [HH:MM:SS] 사용자: 메시지
-                            log_entry = f"[{update.message.date.strftime('%H:%M:%S')}] {update.message.from_user.first_name}: {update.message.text}\n"
+                            log_entry = f"[{kst_time.strftime('%H:%M:%S')}] {update.message.from_user.first_name}: {update.message.text}\n"
                             
                             # 파일에 로그 추가 (UTF-8 인코딩)
                             with open(log_filepath, 'a', encoding='utf-8') as f:
