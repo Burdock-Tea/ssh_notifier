@@ -57,7 +57,7 @@ if __name__ == "__main__":
             f"🖥️ *서버*: `{server_name}`\n"
             f"🌐 *접속 IP*: `{client_ip}`\n"
             f"⏰ *시간*: `{event_time}`\n"
-            f"⚙️ *PID*: `{os.getpid()}`"
+            f"⚙️ *PID*: `{os.getppid()}`"
         )
     elif pam_type == "close_session":
         message_text = (
@@ -66,7 +66,7 @@ if __name__ == "__main__":
             f"🖥️ *서버*: `{server_name}`\n"
             f"🌐 *접속 IP*: `{client_ip}`\n"
             f"⏰ *시간*: `{event_time}`\n"
-            f"⚙️ *PID*: `{os.getpid()}`"
+            f"⚙️ *PID*: `{os.getppid()}`"
         )
 
     if message_text:
