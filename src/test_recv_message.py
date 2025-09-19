@@ -57,16 +57,22 @@ async def main():
                             try:
                                 file_info = await bot.get_file(file_to_download.file_id)
                                 
-                                # API가 제공하는 경로와 원본 파일명에서 확장자 추출
-                                _, api_ext = os.path.splitext(file_info.file_path)
-                                _, original_ext = os.path.splitext(original_filename)
-                                
-                                # API 제공 확장자를 우선 사용, 없으면 원본 파일명 확장자 사용
-                                ext = api_ext or original_ext or '.dat'
-                                
-                                # 저장 파일명: file_id + 확장자 (고유성 보장)
-                                save_filename = f"{file_to_download.file_id}{ext}"
+                                # 파일명 공백을 언더바로 치환하고, 중복 시 시퀀스 추가
+                                save_filename = original_filename.replace(' ', '_')
                                 save_path = os.path.join('log', save_filename)
+
+                                # 동일 파일명 존재 시 시퀀스 추가
+                                if os.path.exists(save_path):
+                                    name, ext = os.path.splitext(save_filename)
+                                    i = 1
+                                    while True:
+                                        new_save_filename = f"{name}_{i:03d}{ext}"
+                                        new_save_path = os.path.join('log', new_save_filename)
+                                        if not os.path.exists(new_save_path):
+                                            save_path = new_save_path
+                                            save_filename = new_save_filename
+                                            break
+                                        i += 1
 
                                 response = requests.get(file_info.file_path)
                                 if response.status_code == 200:
@@ -83,11 +89,14 @@ async def main():
                                         f.write(log_entry)
 
                                     print(f"파일을 수신하여 '{save_path}'에 저장했습니다.")
+                                    await bot.send_message(chat_id=update.message.chat.id, text=f"파일 '{original_filename}'이(가) 성공적으로 저장되었습니다.")
                                 else:
                                     print(f"파일 다운로드 실패 (ID: {file_to_download.file_id})")
+                                    await bot.send_message(chat_id=update.message.chat.id, text=f"파일 '{original_filename}' 다운로드에 실패했습니다.")
 
                             except Exception as e:
                                 print(f"파일 처리 중 오류 발생: {e}")
+                                await bot.send_message(chat_id=update.message.chat.id, text=f"파일 '{original_filename}' 처리 중 오류가 발생했습니다.")
                         
                         # 텍스트 메시지 처리
                         elif update.message.text:
