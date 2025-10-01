@@ -5,6 +5,6 @@
 
 cd "$(dirname "$0")"
 
-nohup python3 src/test_recv_message.py &
+nohup python3 src/test_recv_message.py | awk '{ print strftime("[%Y-%m-%d %H:%M:%S]"), $0; fflush(); }' &
 
 
