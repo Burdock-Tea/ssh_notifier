@@ -113,6 +113,28 @@ async def main():
                                 f.write(log_entry)
                                 
                             print(f"텍스트 메시지를 '{log_filepath}'에 저장했습니다.")
+                    else:
+                        # 새로운 CHAT_ID 로깅
+                        new_chat_id = update.message.chat.id
+                        user_name = update.message.from_user.first_name
+                        log_filepath = os.path.join('log', 'new_chat_id.log')
+                        
+                        # 중복 저장 방지
+                        is_already_logged = False
+                        try:
+                            with open(log_filepath, 'r', encoding='utf-8') as f:
+                                for line in f:
+                                    if f"New CHAT_ID: {new_chat_id}" in line:
+                                        is_already_logged = True
+                                        break
+                        except FileNotFoundError:
+                            pass # 파일이 없으면 그냥 진행
+
+                        if not is_already_logged:
+                            log_entry = f"New CHAT_ID: {new_chat_id}, User: {user_name}\n"
+                            with open(log_filepath, 'a', encoding='utf-8') as f:
+                                f.write(log_entry)
+                            print(f"새로운 CHAT_ID({new_chat_id})를 'new_chat_id.log'에 저장했습니다.")
                 
                 # 다음 폴링을 위해 update_id 갱신
                 last_update_id = update.update_id
