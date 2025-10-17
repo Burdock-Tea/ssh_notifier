@@ -67,13 +67,13 @@ if __name__ == "__main__":
     rate = get_jpy_krw_from_naver()
 
     # 환율 정보를 성공적으로 가져왔고, 지정된 임계값을 벗어났는지 확인합니다.
-    if rate is not None and (rate <= 930 or rate >= 960):
+    if rate is not None and (rate <= 920 or rate >= 960):
         # 조건을 만족할 때만 메시지를 생성하고 전송합니다.
         message = (
             f"💴 *JPY/KRW 환율 변동 알림* 💴\n\n"
             f"🗓️ *기준 시각*: {now_str}\n"
             f"📈 *현재 환율*: 100엔 = `{rate:.2f}`원\n\n"
-            f"⚠️ 설정된 범위(930원 이하 또는 960원 이상)를 벗어났습니다."
+            f"⚠️ 설정된 범위(920원 이하 또는 960원 이상)를 벗어났습니다."
         )
         send_telegram_message(message)
     # else: 환율이 범위 내에 있거나 조회에 실패한 경우, 아무 작업도 하지 않고 종료합니다.
